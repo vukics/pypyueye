@@ -29,7 +29,7 @@ __status__ = "Development"
 
 from pyueye import ueye
 from threading import Thread
-from PyQt5 import QtWidgets, QtGui
+#from PyQt5 import QtWidgets, QtGui
 import cv2
 
 
@@ -149,11 +149,11 @@ class ImageData:
                                    self.mem_info.pitch,
                                    True)
 
-    def as_cv_image(self):
-        return QtGui.QImage(self.as_1d_image().data,
-                            self.mem_info.width,
-                            self.mem_info.height,
-                            QtGui.QImage.Format_RGB888)
+    # def as_cv_image(self):
+    #     return QtGui.QImage(self.as_1d_image().data,
+    #                         self.mem_info.width,
+    #                         self.mem_info.height,
+    #                         QtGui.QImage.Format_RGB888)
 
     def as_1d_image(self):
         channels = int((7 + self.bits_per_pixel) / 8)
