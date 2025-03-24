@@ -30,6 +30,7 @@ __status__ = "Development"
 from pyueye import ueye
 from .utils import (uEyeException, Rect, get_bits_per_pixel,
                     ImageBuffer, check, ImageData)
+import warnings
 
 
 class Camera(object):
@@ -145,14 +146,18 @@ class Camera(object):
         # checking available fps
         mini, maxi = self.get_fps_range()
         if fps < mini:
-            print(f'Warning: Specified fps ({fps:.2f}) not in possible range:'
-                  f' [{mini:.2f}, {maxi:.2f}].'
-                  f' fps has been set to {mini:.2f}.')
+            warnings.warn(
+                f'Specified fps ({fps:.2f}) not in possible range:'
+                f' [{mini:.2f}, {maxi:.2f}].'
+                f' fps has been set to {mini:.2f}.'
+            )
             fps = mini
         if fps > maxi:
-            print(f'Warning: Specified fps ({fps:.2f}) not in possible range:'
-                  f' [{mini:.2f}, {maxi:.2f}].'
-                  f' fps has been set to {maxi:.2f}.')
+            warnings.warn(
+                f'Specified fps ({fps:.2f}) not in possible range:'
+                f' [{mini:.2f}, {maxi:.2f}].'
+                f' fps has been set to {maxi:.2f}.'
+            )
             fps = maxi
         fps = ueye.c_double(fps)
         new_fps = ueye.c_double()
@@ -202,8 +207,10 @@ class Camera(object):
             Current pixelclock.
         """
         # Warning
-        print('Warning: when changing pixelclock at runtime, you may need to '
-              'update the fps and exposure parameters')
+        warnings.warn(
+            'When changing pixelclock at runtime, you may need to '
+            'update the fps and exposure parameters'
+        )
         # get pixelclock range
         pcrange = (ueye.c_uint*3)()
         check(ueye.is_PixelClock(self.h_cam, ueye.IS_PIXELCLOCK_CMD_GET_RANGE,
@@ -211,12 +218,16 @@ class Camera(object):
         pcmin, pcmax, pcincr = pcrange
         if pixelclock < pcmin:
             pixelclock = pcmin
-            print(f"Pixelclock out of range [{pcmin}, {pcmax}] and set "
-                  f"to {pcmin}")
+            warnings.warn(
+                f"Pixelclock out of range [{pcmin}, {pcmax}] and set "
+                f"to {pcmin}"
+            )
         elif pixelclock > pcmax:
             pixelclock = pcmax
-            print(f"Pixelclock out of range [{pcmin}, {pcmax}] and set "
-                  f"to {pcmax}")
+            warnings.warn(
+                f"Pixelclock out of range [{pcmin}, {pcmax}] and set "
+                f"to {pcmax}"
+            )
         # Set pixelclock
         pixelclock = ueye.c_uint(pixelclock)
         check(ueye.is_PixelClock(self.h_cam, ueye.IS_PIXELCLOCK_CMD_SET,
@@ -356,7 +367,7 @@ class Camera(object):
                 ims.append(imdata.as_1d_image())
                 imdata.unlock()
             else:
-                print(f"Warning: Missed {i}th frame !")
+                warnings.warn(f"Missed {i}th frame !")
                 ims.append(None)
         self.stop_video()
         return ims
